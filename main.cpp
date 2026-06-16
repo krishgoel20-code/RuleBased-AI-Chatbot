@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <cctype>
+
 using namespace std;
 
 void lower(string &s) {
@@ -73,25 +74,29 @@ int main() {
     responses["thankyou"] = "You're welcome 😊";
     responses["thanks"] = "Happy to help 🚀";
 
-    cout << "Bot: Hi there! How can I help you today?\n";
-    
-    while (true) {
-        cout << "\nYou: ";
-        string st;
-        getline(cin, st);
+    crow::SimpleApp app;
+
+    CROW_ROUTE(app, "/")([](){
+        return "Krish Goel's C++ AI Chatbot Web Engine is Online! Send messages via: /chat?msg=YOUR_INPUT";
+    });
+
+    CROW_ROUTE(app, "/chat")([responses](const crow::request& req){
+        auto msg_param = req.url_params.get("msg");
+        if (!msg_param) return crow::response("Bot: Please provide a message query parameter (?msg=...)");
+        string st = string(msg_param);
         lower(st);
         if (st == "exit" || st == "bye" || st == "break") {
-            break;
+            return crow::response("Bot: Session ended 👋 Goodbye!");
         }
         auto it = responses.find(st);
         if (it != responses.end()) {
-            cout << "Bot: " << it->second << "\n";
-        } 
-        else {
-            cout << "Bot: Sorry 😅 I don't understand that command yet. Please try saying 'hello' or 'help'.\n";
+            return crow::response("Bot: " + it->second);
+        } else {
+            return crow::response("Bot: Sorry 😅 I don't understand that command yet. Please try saying 'hello' or 'help'.");
         }
-    }
-    
-    cout << "\nBot: Goodbye 👋 Have a wonderful day!\n";
-    return 0;
+    });
+
+    char* port = getenv("PORT");
+    uint16_t app_port = port ? (uint16_t)stoi(port) : 18080;
+    app.bindaddr("0.0.0.0").port(app_port).multithreaded().run();
 }
