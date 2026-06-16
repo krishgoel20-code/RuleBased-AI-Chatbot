@@ -77,9 +77,10 @@ int main() {
     crow::SimpleApp app;
 
     CROW_ROUTE(app, "/")([](){
-    auto page = crow::mustache::load("index.html");
-    return page.render();
-});
+        auto page = crow::mustache::load("index.html");
+        return page.render();
+    });
+
     CROW_ROUTE(app, "/chat")([responses](const crow::request& req){
         auto msg_param = req.url_params.get("msg");
         if (!msg_param) return crow::response("Bot: Please provide a message query parameter (?msg=...)");
@@ -94,6 +95,25 @@ int main() {
         } else {
             return crow::response("Bot: Sorry 😅 I don't understand that command yet. Please try saying 'hello' or 'help'.");
         }
+    });
+
+    // Dedicated Form Endpoint: Tracks inputs and loops out custom print configurations
+    CROW_ROUTE(app, "/contact")([](const crow::request& req){
+        auto email_param = req.url_params.get("email");
+        auto message_param = req.url_params.get("message");
+
+        if (!email_param || !message_param) {
+            return crow::response("Error: Missing parameters.");
+        }
+
+        // Print directly to the backend terminal out pipeline
+        cout << "\n========================================\n";
+        cout << "📢 NEW CONTACT FORM INBOUND DETECTED!\n";
+        cout << "FROM EMAIL: " << email_param << "\n";
+        cout << "MESSAGE: " << message_param << "\n";
+        cout << "========================================\n" << endl;
+
+        return crow::response("Thank you! Your support ticket has been received and compiled in the system logs successfully.");
     });
 
     char* port = getenv("PORT");
