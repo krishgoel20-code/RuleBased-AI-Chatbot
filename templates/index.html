@@ -1,29 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Krish's Chatbot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional AI Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #121212; color: white; padding: 50px; text-align: center; }
-        .chat-box { max-width: 500px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; }
-        input { width: 70%; padding: 10px; border-radius: 5px; border: none; }
-        button { padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #response { margin-top: 20px; color: #00ffcc; font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; height: 100vh; background: #071126; color: #ffffff; overflow: hidden; }
+        
+        /* Sidebar Layout */
+        .sidebar { width: 260px; background: #0b1a3a; padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #142a56; }
+        .logo-section h1 { font-size: 24px; color: #38b6ff; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .features-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+        .features-list li { font-size: 15px; color: #cbd5e1; display: flex; align-items: center; gap: 10px; }
+        .features-list li::before { content: "✓"; color: #38b6ff; font-weight: bold; }
+        
+        /* Sidebar Action Buttons */
+        .sidebar-buttons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .btn-secondary { background: #38b6ff; color: #071126; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; width: fit-content; padding: 8px 16px; }
+        .btn-clear { background: #38b6ff; color: #071126; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; text-align: center; box-shadow: 0 4px 12px rgba(56, 182, 255, 0.2); }
+        .btn-clear:hover, .btn-secondary:hover { opacity: 0.9; }
+        .footer-credit { font-size: 11px; color: #64748b; }
+
+        /* Main Chat Panel Container */
+        .main-chat { flex: 1; display: flex; flex-direction: column; padding: 40px; position: relative; }
+        .chat-header { font-size: 36px; font-weight: bold; margin-bottom: 30px; color: #ffffff; }
+        
+        /* Message Area Feed */
+        .messages-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; margin-bottom: 100px; padding-right: 10px; }
+        .msg-bubble { max-width: 75%; padding: 12px 20px; border-radius: 12px; font-size: 15px; line-height: 1.5; width: fit-content; animation: fadeIn 0.3s ease-in-out; }
+        .msg-bot { background: #182849; color: #ffffff; border-top-left-radius: 2px; align-self: flex-start; }
+        .msg-user { background: #38b6ff; color: #071126; border-top-right-radius: 2px; align-self: flex-end; font-weight: 500; }
+
+        /* Input Control Strip */
+        .input-container { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; gap: 15px; }
+        .input-field { flex: 1; background: #132244; border: 1px solid #1e3360; border-radius: 12px; padding: 16px 24px; color: #ffffff; font-size: 15px; outline: none; }
+        .input-field::placeholder { color: #4b5e85; }
+        .input-field:focus { border-color: #38b6ff; }
+        .btn-send { background: #38b6ff; color: #071126; border: none; border-radius: 12px; padding: 0 30px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 14px rgba(56, 182, 255, 0.3); }
+        .btn-send:hover { background: #2da1e6; }
+
+        /* Custom Scrollbar for sleek appearance */
+        .messages-container::-webkit-scrollbar { width: 6px; }
+        .messages-container::-webkit-scrollbar-track { background: transparent; }
+        .messages-container::-webkit-scrollbar-thumb { background: #1e3360; border-radius: 10px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="chat-box">
-        <h2>C++ Rule-Based AI Chatbot</h2>
-        <input type="text" id="userInput" placeholder="Ask me something...">
-        <button onclick="sendMessage()">Send</button>
-        <div id="response"></div>
+
+    <div class="sidebar">
+        <div class="top-group">
+            <div class="logo-section">
+                <h1>🤖 AI Chatbot</h1>
+            </div>
+            <ul class="features-list">
+                <li>Smart Responses</li>
+                <li>Voice Assistant</li>
+                <li>Typing Animation</li>
+                <li>Modern UI</li>
+                <li>Responsive Design</li>
+            </ul>
+        </div>
+        
+        <div class="bottom-group">
+            <div class="sidebar-buttons">
+                <button class="btn-secondary" onclick="alert('C++ Rule-Based Chatbot Frame\nDeveloper: Krish Goel')">About Page</button>
+                <button class="btn-clear" onclick="clearChat()">Clear Chat</button>
+            </div>
+            <div class="footer-credit">Created by Krish Goel 🚀</div>
+        </div>
+    </div>
+
+    <div class="main-chat">
+        <div class="chat-header">Professional AI Chatbot</div>
+        
+        <div class="messages-container" id="chatFeed">
+            <div class="msg-bubble msg-bot">Hello 👋 Welcome to AI Chatbot</div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="userQuery" class="input-field" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') executeMessageSend()">
+            <button class="btn-send" onclick="executeMessageSend()">Send</button>
+        </div>
     </div>
 
     <script>
-        function sendMessage() {
-            let msg = document.getElementById("userInput").value;
-            fetch('/chat?msg=' + encodeURIComponent(msg))
-                .then(res => res.text())
-                .then(data => { document.getElementById("response").innerText = data; });
+        function executeMessageSend() {
+            const inputElement = document.getElementById("userQuery");
+            const queryText = inputElement.value.trim();
+            if (!queryText) return;
+
+            const chatFeed = document.getElementById("chatFeed");
+
+            // 1. Instantly Append User Bubble
+            const userBubble = document.createElement("div");
+            userBubble.className = "msg-bubble msg-user";
+            userBubble.innerText = queryText;
+            chatFeed.appendChild(userBubble);
+
+            // Clear active field bar and lock viewport floor focus
+            inputElement.value = "";
+            chatFeed.scrollTop = chatFeed.scrollHeight;
+
+            // 2. Query Runtime API Target Link Endpoint
+            fetch('/chat?msg=' + encodeURIComponent(queryText))
+                .then(response => response.text())
+                .then(responseText => {
+                    const botBubble = document.createElement("div");
+                    botBubble.className = "msg-bubble msg-bot";
+                    botBubble.innerText = responseText;
+                    chatFeed.appendChild(botBubble);
+                    
+                    // Maintain scroll floor anchor
+                    chatFeed.scrollTop = chatFeed.scrollHeight;
+                })
+                .catch(error => {
+                    const errorBubble = document.createElement("div");
+                    errorBubble.className = "msg-bubble msg-bot";
+                    errorBubble.innerText = "Bot: Connection error trying to reach server interface backend.";
+                    chatFeed.appendChild(errorBubble);
+                });
+        }
+
+        // Functional Clear Chat Utility
+        function clearChat() {
+            const chatFeed = document.getElementById("chatFeed");
+            chatFeed.innerHTML = '<div class="msg-bubble msg-bot">Hello 👋 Welcome to AI Chatbot</div>';
         }
     </script>
 </body>
