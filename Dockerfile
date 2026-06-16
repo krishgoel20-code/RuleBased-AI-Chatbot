@@ -21,5 +21,8 @@ COPY main.cpp .
 # Compile your code with optimization flags
 RUN g++ -O3 -std=c++17 main.cpp -I. -lpthread -o chatbot_server
 
+# CRITICAL PORT BINDING FIX: Expose port 18080 to Render's internal network scanner
+EXPOSE 18080
+
 # Tell Render to launch your compiled engine binary
 CMD ["./chatbot_server"]
