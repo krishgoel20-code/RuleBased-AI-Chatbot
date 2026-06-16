@@ -1,7 +1,5 @@
-# Use a clean image that contains standard C++ compilers
 FROM ubuntu:22.04
 
-# Install essential compilation dependencies
 RUN apt-get update && apt-get install -y \
     g++ \
     cmake \
@@ -11,18 +9,17 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Download the Crow Web Framework header directly
 RUN git clone https://github.com/CrowCpp/Crow.git && \
     cp -r Crow/include/* .
 
-# Copy your source code into the machine build layer
+# Copy your source code
 COPY main.cpp .
 
-# Compile your code with optimization flags
+# CRITICAL FIX: Explicitly copy your local templates folder onto Render's server
+COPY templates/ ./templates/
+
 RUN g++ -O3 -std=c++17 main.cpp -I. -lpthread -o chatbot_server
 
-# CRITICAL PORT BINDING FIX: Expose port 18080 to Render's internal network scanner
 EXPOSE 18080
 
-# Tell Render to launch your compiled engine binary
 CMD ["./chatbot_server"]
