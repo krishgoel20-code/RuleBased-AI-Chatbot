@@ -77,9 +77,9 @@ int main() {
     crow::SimpleApp app;
 
     CROW_ROUTE(app, "/")([](){
-        return "Krish Goel's C++ AI Chatbot Web Engine is Online! Send messages via: /chat?msg=YOUR_INPUT";
-    });
-
+    auto page = crow::mustache::load("index.html");
+    return page.render();
+});
     CROW_ROUTE(app, "/chat")([responses](const crow::request& req){
         auto msg_param = req.url_params.get("msg");
         if (!msg_param) return crow::response("Bot: Please provide a message query parameter (?msg=...)");
